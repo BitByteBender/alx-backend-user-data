@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ Tasks -> Regex-ing """
 import mysql.connector
-from mysql.connector import connection
 import logging
 import os
 import re
@@ -68,7 +67,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 
     db_con = mysql.connector.connect(
             user=usr,
-            port=3306
+            port=3306,
             password=pwd,
             host=host,
             database=db,)
