@@ -56,18 +56,19 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db() -> connection.MySQLConnection:
+def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Connect to the MySQL db using env vars and returns the cnx obj """
     usr = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
-    pwd = os.getenv('PERSONAL_DATA_DB_PASSWORD', 'root')
+    pwd = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
     host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    db = os.getenv('PERSONAL_DATA_DB_NAME', 'my_db')
+    db = os.getenv('PERSONAL_DATA_DB_NAME', '')
 
     if not db:
         raise ValueError("The DB_name not specified in PERSONAL_DATA_DB_NAME")
 
     db_con = mysql.connector.connect(
             user=usr,
+            port=3306
             password=pwd,
             host=host,
             database=db,)
