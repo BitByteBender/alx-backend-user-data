@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """ Tasks -> Regex-ing """
+import mysql.connector
+from mysql.connector import connection
 import logging
+import os
 import re
 from typing import List, Tuple
 
@@ -51,3 +54,21 @@ def get_logger() -> logging.Logger:
     handler.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.addHandler(handler)
     return logger
+
+
+def get_db() -> connection.MySQLConnection:
+    """ Connect to the MySQL db using env vars and returns the cnx obj """
+    usr = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    pwd = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    if not db:
+        raise ValueError("The DB_name not specified in PERSONAL_DATA_DB_NAME")
+
+    db_con = mysql.connector.connect(
+            user=usr,
+            password=pwd,
+            host=host,
+            database=db,)
+    return db_con
