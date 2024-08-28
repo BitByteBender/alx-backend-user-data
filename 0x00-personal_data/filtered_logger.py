@@ -17,8 +17,8 @@ def filter_datum(fields: List[str],
                   message)
 
 
-PII_FIELDS: Tuple[str, str, str, str, str] = ("email", "ssn", "password",
-                                              "phone_number", "address")
+PII_FIELDS: Tuple[str, str, str, str, str] = ("name", "email", "phone",
+                                              "ssn", "password")
 
 
 class RedactingFormatter(logging.Formatter):
