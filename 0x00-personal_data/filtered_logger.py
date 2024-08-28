@@ -2,7 +2,7 @@
 """ Tasks -> Regex-ing """
 import logging
 import re
-from typing import List
+from typing import List, Tuple
 
 
 def filter_datum(fields: List[str],
@@ -15,6 +15,10 @@ def filter_datum(fields: List[str],
                   match.group(1),
                   redaction),
                   message)
+
+
+PII_FIELDS: Tuple[str, str, str, str, str] = ("email", "ssn", "password",
+                                              "phone_number", "address")
 
 
 class RedactingFormatter(logging.Formatter):
@@ -35,3 +39,15 @@ class RedactingFormatter(logging.Formatter):
         msg = super().format(record)
         output = filter_datum(self.fields, self.REDACTION, msg, self.SEPARATOR)
         return output
+
+
+def get_logger() -> logging.Logger:
+    """ Creates and returns a logger configuree with RedactingFormatter """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    handler = logging.StreamHandler()
+    handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    logger.addHandler(handler)
+    return logger
