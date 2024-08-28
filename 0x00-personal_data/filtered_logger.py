@@ -72,3 +72,20 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
             host=host,
             database=db,)
     return db_con
+
+
+def main() -> None:
+    """ Function to retrieve and filter data from database """
+    logger = get_logger()
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users;")
+    from row in cursor:
+        msg = "; ".join("{}={}".format(k, v) for k, v in row.items())
+        logger.info(msg)
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
