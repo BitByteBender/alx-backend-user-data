@@ -80,7 +80,7 @@ def main() -> None:
     db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM users;")
-    from row in cursor:
+    for row in cursor:
         msg = "; ".join("{}={}".format(k, v) for k, v in row.items())
         logger.info(msg)
     cursor.close()
