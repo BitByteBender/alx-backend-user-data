@@ -65,7 +65,7 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(self,
                                      user_email: str,
-                                     user_pwd: str) -> UserType:
+                                     user_pwd: str) -> TypeVar('User'):
         """
         Retrieves a user instance based on the usr email and passwd
         Returns: UserType or None otherwise
@@ -83,3 +83,27 @@ class BasicAuth(Auth):
             return None
 
         return usr
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        """
+        if request is None:
+            return None
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return None
+
+        b64_header = self.extract_base64_authorization_header(auth_header)
+        if not b64_header:
+            return None
+
+        decode_header = self.decode_base64_authorization_header(b64_header)
+        if not decode_header:
+            return None
+
+        usr_email, usr_pwd = self.extract_user_credentials(decode_header)
+        if not usr_email or not usr_pwd:
+            return None
+
+        return self.user_object_from_credentials(usr_email, usr_pwd)
