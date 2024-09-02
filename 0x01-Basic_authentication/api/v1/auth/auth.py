@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
 """ Authentication module """
 from flask import request
+from fnmatch
 from typing import List, TypeVar
 
 
 class Auth:
     """ Auth-sys Template """
-    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
+    def require_auth(self, path: str, excluded_paths: List) -> bool:
         """
         Check if auth is required
         Returns True if auth is required otherwise False
         """
-        if path is None or (excluded_paths is None or
-                            len(excluded_paths) == 0):
+        if not path or not excluded_paths:
             return True
 
-        normalized_path = path.rstrip('/') + '/'
-
         for ep in excluded_paths:
-            normalized_ep = ep.rstrip('/') + '/'
-            if normalized_path == normalized_ep:
+            if fnmatch.fnmatchcase(path, ep):
                 return False
 
         return True
