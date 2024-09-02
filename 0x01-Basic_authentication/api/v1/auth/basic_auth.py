@@ -12,7 +12,8 @@ UserType = TypeVar('User', bound=User)
 class BasicAuth(Auth):
     """ BasicAuth class inheriting from Auth """
     def extract_base64_authorization_header(self,
-                                            authorization_header: str) -> str:
+                                            authorization_header: str
+                                            ) -> Optional[str]:
         """
         Extracts the Base64 part of the Authorization header for basic_auth
         Returns: Base64 or None if header is invalid
@@ -28,7 +29,7 @@ class BasicAuth(Auth):
 
     def decode_base64_authorization_header(self,
                                            base64_authorization_header: str
-                                           ) -> str:
+                                           ) -> Optional[str]:
         """
         Decodes the Base64 part of the Auth header
         Returns: decoded value as a string or None if input is invalid
@@ -45,7 +46,7 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(self,
                                  decoded_base64_authorization_header: str
-                                 ) -> str:
+                                 ) -> Tuple[Optional[str], Optional[str]]:
         """
         Extracts user credentials from the decoded Base64 auth header
         Returns: tuple containing user email & password,
@@ -65,7 +66,7 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(self,
                                      user_email: str,
-                                     user_pwd: str) -> TypeVar('User'):
+                                     user_pwd: str) -> Optional[UserType]:
         """
         Retrieves a user instance based on the usr email and passwd
         Returns: UserType or None otherwise
@@ -84,7 +85,7 @@ class BasicAuth(Auth):
 
         return usr
 
-    def current_user(self, request=None) -> TypeVar('User'):
+    def current_user(self, request=None) -> Optional[UserType]:
         """
         Retrieves current User instance
         """
