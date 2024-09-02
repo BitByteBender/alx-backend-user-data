@@ -6,9 +6,6 @@ from typing import TypeVar, Optional, Tuple
 from models.user import User
 
 
-UserType = TypeVar('User', bound=User)
-
-
 class BasicAuth(Auth):
     """ BasicAuth class inheriting from Auth """
     def extract_base64_authorization_header(self,
@@ -66,46 +63,28 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(self,
                                      user_email: str,
-                                     user_pwd: str) -> Optional[UserType]:
+                                     user_pwd: str) -> Optional[User]:
         """
         Retrieves a user instance based on the usr email and passwd
         Returns: UserType or None otherwise
         """
-        if not isinstance(user_email, str) or not isinstance(user_pwd, str):
-            return None
+        if isinstance(user_email, str) or not isinstance(user_pwd, str):
+            try:
+                users = User.search({'email': user_email})
+                if not users and users[0].is_valid_password(user_pwd):
+                    return users[0]
+            except Exception:
+                return None
 
-        usrs = User.search({"email": user_email})
-        if not usrs:
-            return None
-
-        usr = usrs[0]
-
-        if not usr.is_valid_password(user_pwd):
-            return None
-
-        return usr
-
-    def current_user(self, request=None) -> Optional[UserType]:
+    def current_user(self, request=None) -> Optional[User]:
         """
         Retrieves current User instance
         """
         if request is None:
             return None
 
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            return None
-
+        auth_header = self.extract_authorization_header(request)
         b64_header = self.extract_base64_authorization_header(auth_header)
-        if not b64_header:
-            return None
-
         decode_header = self.decode_base64_authorization_header(b64_header)
-        if not decode_header:
-            return None
-
         usr_email, usr_pwd = self.extract_user_credentials(decode_header)
-        if not usr_email or not usr_pwd:
-            return None
-
         return self.user_object_from_credentials(usr_email, usr_pwd)
