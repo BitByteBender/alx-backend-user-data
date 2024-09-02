@@ -9,9 +9,20 @@ class Auth:
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Check if auth is required
-        Returns a boolean
+        Returns True if auth is required otherwise False
         """
-        return False
+        if path is None or (excluded_paths is None or
+                            len(excluded_paths) == 0):
+            return True
+
+        normalized_path = path.rstrip('/') + '/'
+
+        for ep in excluded_paths:
+            normalized_ep = ep.rstrip('/') + '/'
+            if normalized_path == normalized_ep:
+                return False
+
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
@@ -25,3 +36,4 @@ class Auth:
         Gets current user from request
         Returns None
         """
+        return None
