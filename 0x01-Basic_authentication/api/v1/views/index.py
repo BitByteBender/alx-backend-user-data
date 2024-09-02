@@ -30,6 +30,15 @@ def stats() -> str:
 def unauthorized() -> str:
     """ GET /api/v1/unauthorized
     Raises:
-      - abort 401 to triggeer the unauthorized handler
+      - abort 401 to trigger the unauthorized handler
     """
     abort(401)
+
+
+@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+def forbidden() -> str:
+    """ GET /api/v1/forbidden
+    Raises:
+      - abort 403 to trigger the forbidden handler
+    """
+    abort(403)
