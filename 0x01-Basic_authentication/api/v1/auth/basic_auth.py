@@ -2,7 +2,7 @@
 """ Basic Authentication module """
 from api.v1.auth.auth import Auth
 import base64
-from typing import TypeVar
+from typing import TypeVar, Optional
 from models.user import User
 
 
@@ -45,7 +45,7 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(self,
                                  decoded_base64_authorization_header: str
-                                 ) -> str:
+                                 ) -> (Optional[str], Optional[str]):
         """
         Extracts user credentials from the decoded Base64 auth header
         Returns: tuple containing user email & password,
@@ -86,6 +86,7 @@ class BasicAuth(Auth):
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
+        Retrieves current User instance
         """
         if request is None:
             return None
