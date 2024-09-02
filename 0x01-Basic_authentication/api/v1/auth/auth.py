@@ -7,7 +7,7 @@ from typing import List, TypeVar
 
 class Auth:
     """ Auth-sys Template """
-    def require_auth(self, path: str, excluded_paths: List) -> bool:
+    def require_auth(self, path: str, excluded_paths: list) -> bool:
         """
         Check if auth is required
         Returns True if auth is required otherwise False
