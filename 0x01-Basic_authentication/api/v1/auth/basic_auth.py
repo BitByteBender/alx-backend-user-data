@@ -43,23 +43,19 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(self,
                                  decoded_base64_authorization_header: str
-                                 ) -> Tuple[Optional[str], Optional[str]]:
+                                 ) -> Tuple[str, str]:
         """
         Extracts user credentials from the decoded Base64 auth header
         Returns: tuple containing user email & password,
                  or None, None if invalid
         """
-        if not isinstance(decoded_base64_authorization_header, str):
-            return None, None
-
-        if ':' not in decoded_base64_authorization_header:
-            return None, None
-
-        try:
-            email, passwd = decoded_base64_authorization_header.split(':', 1)
-            return email, passwd
-        except ValueError:
-            return None, None
+        if type(decoded_base64_authorization_header) == str:
+            parts = decoded_base64_authorization_header.split(':', 1)
+            if len(parts) == 2:
+                usr = parts[0]
+                passwd = parts[1]
+                return usr, passwd
+        return None, None
 
     def user_object_from_credentials(self,
                                      user_email: str,
@@ -68,13 +64,17 @@ class BasicAuth(Auth):
         Retrieves a user instance based on the usr email and passwd
         Returns: UserType or None otherwise
         """
-        if isinstance(user_email, str) or not isinstance(user_pwd, str):
+        if type(user_email) == str and type(user_pwd) == str:
             try:
                 users = User.search({'email': user_email})
-                if not users and users[0].is_valid_password(user_pwd):
-                    return users[0]
-            except Exception:
+                if not users:
+                    return None
+                for user in users:
+                    if user.is_valid_password(user_pwd):
+                        return user
+            except Exception as e:
                 return None
+        return None
 
     def current_user(self, request=None) -> Optional[User]:
         """
