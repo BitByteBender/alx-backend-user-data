@@ -2,8 +2,10 @@
 """ Basic Authentication module """
 from api.v1.auth.auth import Auth
 import base64
+import binascii
 from typing import TypeVar, Optional, Tuple
 from models.user import User
+import re
 
 
 class BasicAuth(Auth):
@@ -15,14 +17,11 @@ class BasicAuth(Auth):
         Extracts the Base64 part of the Authorization header for basic_auth
         Returns: Base64 or None if header is invalid
         """
-        if not isinstance(authorization_header, str):
-            return None
-
-        if not authorization_header.startswith("Basic "):
-            return None
-
-        return (authorization_header.split("Basic ")[1]
-                if "Basic " in authorization_header else None)
+        if isinstance(authorization_header, str):
+            checker = re.fullmatch(r'^Basic (?P<token>.+)$',
+                                   authorization_header.strip())
+            return checker.group('token') if checker else None
+        return None
 
     def decode_base64_authorization_header(self,
                                            base64_authorization_header: str
@@ -31,15 +30,14 @@ class BasicAuth(Auth):
         Decodes the Base64 part of the Auth header
         Returns: decoded value as a string or None if input is invalid
         """
-        if not isinstance(base64_authorization_header, str):
-            return None
-
-        try:
-            b64 = base64_authorization_header.encode('utf-8')
-            decoded_val = base64.b64decode(b64)
-            return decoded_val.decode('utf-8')
-        except (base64.binascii.Error, UnicodeDecodeError):
-            return None
+        if isinstance(base64_authorization_header, str):
+            try:
+                b64 = base64_authorization_header
+                decoded_val = base64.b64decode(b64, validate=True)
+                return decoded_val.decode('utf-8')
+            except (binascii.Error, UnicodeDecodeError):
+                return None
+        return None
 
     def extract_user_credentials(self,
                                  decoded_base64_authorization_header: str
@@ -49,11 +47,13 @@ class BasicAuth(Auth):
         Returns: tuple containing user email & password,
                  or None, None if invalid
         """
-        if type(decoded_base64_authorization_header) == str:
-            parts = decoded_base64_authorization_header.split(':', 1)
-            if len(parts) == 2:
-                usr = parts[0]
-                passwd = parts[1]
+        if isinstance(decoded_base64_authorization_header, str):
+            ptrn = r'(?P<user>[^:]+):(?P<password>.+)'
+            b64 = decoded_base64_authorization_header.strip()
+            checker = re.fullmatch(ptrn, b64)
+            if checker:
+                usr = checker.group('user')
+                passwd = checker.group('password')
                 return usr, passwd
         return None, None
 
@@ -64,14 +64,11 @@ class BasicAuth(Auth):
         Retrieves a user instance based on the usr email and passwd
         Returns: UserType or None otherwise
         """
-        if type(user_email) == str and type(user_pwd) == str:
+        if isinstance(user_email, str) and isinstance(user_pwd, str):
             try:
                 users = User.search({'email': user_email})
-                if not users:
-                    return None
-                for user in users:
-                    if user.is_valid_password(user_pwd):
-                        return user
+                if users and users[0].is_valid_password(user_pwd):
+                    return users[0]
             except Exception as e:
                 return None
         return None

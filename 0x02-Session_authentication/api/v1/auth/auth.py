@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ Authentication module """
+import re
 from flask import request
 from typing import List, TypeVar
 
@@ -11,16 +12,19 @@ class Auth:
         Check if auth is required
         Returns True if auth is required otherwise False
         """
-        if path is None or (excluded_paths is None or
-                            len(excluded_paths) == 0):
-            return True
+        if path is not None and excluded_paths is not None:
+            for ep in map(lambda e: e.strip(), excluded_paths):
+                ptrn = ''
+                if ep.endswith('*'):
+                    ptrn = '{}.*'.format(ep[:-1])
+                elif ep.endswith('/'):
+                    ptrn = '{}/*'.format(ep[:-1])
+                else:
+                    ptrn = '{}/*'.format(ep)
 
-        normalized_path = path.rstrip('/') + '/'
-
-        for ep in excluded_paths:
-            normalized_ep = ep.rstrip('/') + '/'
-            if normalized_path == normalized_ep:
-                return False
+                if re.match(ptrn, path):
+                    return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
