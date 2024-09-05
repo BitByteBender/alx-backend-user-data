@@ -46,8 +46,8 @@ class SessionExpAuth(SessionAuth):
         if created_at is None:
             return None
 
-        deltatime = timedelta(seconds=self.session_duration)
-        if datetime.now() - created_at > deltatime:
+        expiry_time = timedelta(seconds=self.session_duration)
+        if datetime.now() - created_at > expiry_time:
             del self.user_id_by_session_id[session_id]
             return None
 
