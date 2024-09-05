@@ -31,3 +31,18 @@ class SessionAuth(Auth):
         """ Retruns a User instance based on _my_seesion_id """
         sess_cookie = self.session_cookie(request)
         return User.get(self.user_id_for_session_id(sess_cookie))
+
+    def destroy_session(self, request=None):
+        """ Destroys a user session """
+        if request is None:
+            return False
+
+        sess_id = self.session_cookie(request)
+        u_id = self.user_id_for_session_id(sess_id)
+        if u_id is None or sess_id is None:
+            return False
+
+        if sess_id in self.user_id_by_session_id:
+            del self.user_id_by_session_id[sess_id]
+            return True
+        return False

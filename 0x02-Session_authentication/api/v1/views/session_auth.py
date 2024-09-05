@@ -11,7 +11,11 @@ from api.v1.app import auth
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login() -> Tuple[str, int]:
-    """ Returns Json representation of a User obj """
+    """
+        Session Auth login handler
+        Returns:
+            Json representation of a User obj
+    """
     email = request.form.get('email')
     password = request.form.get('password')
     if not email or len(email.strip()) == 0:
@@ -36,3 +40,15 @@ def login() -> Tuple[str, int]:
     res = jsonify(user.to_json())
     res.set_cookie(getenv("SESSION_NAME"), sess_id)
     return res
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def signout() -> Tuple[str, int]:
+    """
+        Deletes/Destroys user session
+        Return empty JSON obj
+    """
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({})
