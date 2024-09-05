@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+""" Session Authentication views """
+from flask import abort, jsonify, request
+from os import getenv
+from typing import Tuple
+from models.user import User
+from api.v1.views import app_views
+from api.v1.app import auth
+
+
+@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
+def login() -> Tuple[str, int]:
+    """ Returns Json representation of a User obj """
+    if not request.form.get('email'):
+        return jsonify({"error": "email missing"}), 400
+
+    if not request.form.get('password'):
+        return jsonify({"error": "password missing"}), 400
+
+    try:
+        users = User.search({"email": email})
+    except Exception:
+        return jsonify({"error": "no user found for this email"}), 404
+
+    if not users:
+        return jsonify({"error": "no user found for this email"}), 404
+
+    user = users[0]
+    if not user.is_valid_password(password):
+        return jsonify({"error": "wrong password"}), 401
+
+    sess_id = auth.create_session(user.id)
+    res = jsonify(user.to_json())
+    res.set_cookie(getenv("SESSION_NAME"), sess_id)
+    return res
