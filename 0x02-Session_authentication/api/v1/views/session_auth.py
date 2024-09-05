@@ -11,15 +11,17 @@ from api.v1.app import auth
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login() -> Tuple[str, int]:
     """ Returns Json representation of a User obj """
-    if not request.form.get('email'):
+    email = request.form.get('email')
+    password = request.form.get('password')
+    if not email or len(email.strip()) == 0:
         return jsonify({"error": "email missing"}), 400
 
-    if not request.form.get('password'):
+    if not password or len(password.strip()) == 0:
         return jsonify({"error": "password missing"}), 400
 
     try:
-        users = User.search({"email": email})
-    except Exception:
+        users = User.search({'email': email})
+    except Exception as e:
         return jsonify({"error": "no user found for this email"}), 404
 
     if not users:
