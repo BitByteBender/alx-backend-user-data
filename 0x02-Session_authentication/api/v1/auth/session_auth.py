@@ -29,5 +29,11 @@ class SessionAuth(Auth):
 
     def current_user(self, request=None):
         """ Retruns a User instance based on _my_seesion_id """
+        """
         sess_cookie = self.session_cookie(request)
         return User.get(self.user_id_for_session_id(sess_cookie))
+        """
+        sess_cookie = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(sess_cookie)
+        user = User.get(user_id)
+        return user

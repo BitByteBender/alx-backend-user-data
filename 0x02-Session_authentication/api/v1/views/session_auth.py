@@ -2,6 +2,7 @@
 """ Session Authentication views """
 from flask import abort, jsonify, request
 from os import getenv
+import os
 from typing import Tuple
 from models.user import User
 from api.v1.views import app_views
