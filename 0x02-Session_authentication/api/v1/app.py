@@ -60,12 +60,11 @@ def before_request():
             auth_session = auth.session_cookie(request)
             usr = auth.current_user(request)
 
-            if auth_header is None or usr is None:
-                abort(401 if (auth_header is None and
-                              auth_session is None) else 403)
+            if auth_header is None and auth_session is None:
+                abort(401)
 
-            # if usr is None:
-            # abort(403)
+            if usr is None:
+                abort(403)
             request.current_user = usr
 
 
