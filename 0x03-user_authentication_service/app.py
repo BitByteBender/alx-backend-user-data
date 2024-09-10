@@ -47,12 +47,12 @@ def login() -> str:
     if not valid_user:
         abort(401)
 
-    sess_id = AUTH.create_session(email)
-    if sess_id is None:
+    session_id = AUTH.create_session(email)
+    if session_id is None:
         abort(401)
 
     res = jsonify({"email": email, "message": "loggin in"})
-    res.set_cookie("session_id", sess_id, path="/")
+    res.set_cookie("session_id", session_id, path="/")
     return res
 
 
