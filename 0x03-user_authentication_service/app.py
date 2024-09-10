@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """ Basic flask app creation
 """
-from flask import Flask, jsonify
+from auth import Auth
+from flask import Flask, jsonify, request
 
 
 app = Flask(__name__)
+AUTH = Auth()
 
 
 @app.route("/", methods=["GET"], strict_slashes=False)
@@ -13,6 +15,20 @@ def index() -> str:
         returns a welcoming message
     """
     return jsonify({"message": "Bienvenue"})
+
+
+@app.route("/users", methods=["POST"], strict_slashes=False)
+def insert_user() -> str:
+    """ Registers a new user
+        using email and password
+    """
+    email = request.form.get("email")
+    password = request.form.get("password")
+    try:
+        AUTH.register_user(email, password)
+        return jsonify({"email": email, "message": "user created"}), 200
+    except ValueError:
+        return jsonify({"message": "email already registered"}), 400
 
 
 if __name__ == "__main__":
