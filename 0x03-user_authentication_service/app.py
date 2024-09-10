@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """ Basic flask app creation
 """
-from auth import Auth
 from flask import Flask, jsonify, request
+from auth import Auth
 
 
 app = Flask(__name__)
@@ -25,6 +25,10 @@ def users() -> str:
     """
     email = request.form.get("email")
     password = request.form.get("password")
+
+    if not email or not password:
+        return jsonify({"message": "Missing email or password"}), 400
+
     try:
         AUTH.register_user(email, password)
         return jsonify({"email": email, "message": "user created"}), 200
