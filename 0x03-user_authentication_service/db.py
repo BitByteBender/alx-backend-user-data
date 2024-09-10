@@ -39,7 +39,7 @@ class DB:
             new_usr = User(email=email, hashed_password=hashed_password)
             self._session.add(new_usr)
             self._session.commit()
-        except Exception as e:
+        except Exception:
             self._session.rollback()
             new_usr = None
         return new_usr
