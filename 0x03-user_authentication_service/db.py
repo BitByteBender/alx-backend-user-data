@@ -33,9 +33,13 @@ class DB:
     def add_user(self, email: str, hashed_password: str) -> User:
         """
             Method that adds a new user to the db
-            Returns a newly creted user obj
+            Returns a newly created user obj
         """
-        new_usr = User(email=email, hashed_password=hashed_password)
-        self._session.add(new_usr)
-        self._session.commit()
-        return new_usr
+        try:
+            new_usr = User(email=email, hashed_password=hashed_password)
+            self._session.add(new_usr)
+            self._session.commit()
+            return new_usr
+        except Exception as e:
+            self._session.rollback()
+            return None
