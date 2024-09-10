@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-""" Basic flask app creation """
+""" Basic flask app creation
+"""
 from flask import Flask, jsonify
 
 
 app = Flask(__name__)
 
 
-@app.route("/", method=["GET"])
-def index():
-    """ Basic route that returns a welcoming message """
+@app.route("/", method=["GET"], strict_slashes=False)
+def index() -> str:
+    """ Basic route:
+        returns a welcoming message
+    """
     return jsonify({"message": "Bienvenue"})
 
 
