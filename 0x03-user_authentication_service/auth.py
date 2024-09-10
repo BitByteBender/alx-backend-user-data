@@ -29,8 +29,8 @@ class Auth:
             raise ValueError("User {} already exists".format(email))
         except NoResultFound:
             hashed_password = _hash_password(password)
-            save_user = self._db.add_user(email=email,
-                                          hashed_password=hashed_password)
-            return save_user
+            register_user = self._db.add_user(email=email,
+                                              hashed_password=hashed_password)
+            return register_user
         except InvalidRequestError:
             raise ValueError("Invalid query args")
