@@ -49,3 +49,18 @@ class DB:
         except InvalidRequestError:
             raise InvalidRequestError("Wrong query args are passed")
         return user
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """ Method that updates a usr by its id
+            with arbitrary keyword args
+        """
+        fields = {col.name for col in User.__table__.columns}
+        for k in kwargs:
+            if k not in fields:
+                raise ValueError("Invalid attr: {}".format(k))
+        user = self.find_user_by(id=user_id)
+
+        for k, val in kwargs.items():
+            setattr(user, k, val)
+
+        self._session.commit()
