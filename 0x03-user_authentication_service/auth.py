@@ -32,5 +32,3 @@ class Auth:
             register_user = self._db.add_user(email=email,
                                               hashed_password=hashed_password)
             return register_user
-        except InvalidRequestError:
-            raise ValueError("Invalid query args")
