@@ -18,8 +18,9 @@ def index() -> str:
 
 
 @app.route("/users", methods=["POST"], strict_slashes=False)
-def register_user() -> str:
-    """ Registers a new user using email and password
+def users() -> str:
+    """ POST Route /users
+        Registers a new user using email and password
         Return: Created account with user credentials
     """
     email = request.form.get("email")
