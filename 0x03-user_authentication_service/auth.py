@@ -2,6 +2,7 @@
 """ Auth: Password hasher """
 import bcrypt
 from bcrypt import checkpw
+import uuid
 from db import DB
 from user import User
 from sqlalchemy.exc import InvalidRequestError
@@ -13,6 +14,12 @@ def _hash_password(password: str) -> bytes:
     hashed_pwd = bcrypt.hashpw(password.encode("utf-8"),
                                bcrypt.gensalt())
     return hashed_pwd
+
+
+def _generate_uuid() -> str:
+    """Generates a unique ID
+    """
+    return str(uuid.uuid4())
 
 
 class Auth:
