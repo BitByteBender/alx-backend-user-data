@@ -2,7 +2,7 @@
 """ Auth: Password hasher """
 import bcrypt
 from bcrypt import checkpw
-import uuid
+from uuid import uuid4
 from db import DB
 from user import User
 from sqlalchemy.exc import InvalidRequestError
@@ -17,9 +17,9 @@ def _hash_password(password: str) -> bytes:
 
 
 def _generate_uuid() -> str:
-    """Generates a unique ID
+    """Generates a UUID.
     """
-    return str(uuid.uuid4())
+    return str(uuid4())
 
 
 class Auth:
